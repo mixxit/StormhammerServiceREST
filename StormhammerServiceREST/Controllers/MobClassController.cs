@@ -15,18 +15,18 @@ namespace StormhammerServiceREST.Controllers
     public class MobClassController : ControllerBase
     {
         private readonly ILogger<MobClassController> _logger;
-        private WorldRepository _worldRepository;
-        public MobClassController(ILogger<MobClassController> logger, WorldRepository worldRepository)
+        private StormhammerContext _dbContext;
+        public MobClassController(ILogger<MobClassController> logger, StormhammerContext dbContext)
         {
             _logger = logger;
-            _worldRepository = worldRepository;
+            _dbContext = dbContext;
         }
 
         [HttpGet]
         public ActionResult<List<MobClass>> Get()
         {
             // stub
-            return new OkObjectResult(_worldRepository.MobClass);
+            return new OkObjectResult(_dbContext.MobClass);
         }
     }
 }

@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 namespace StormhammerServiceREST
 {
@@ -31,6 +32,8 @@ namespace StormhammerServiceREST
             };
             
             services.AddControllers();
+            services.AddDbContext<StormhammerContext>(
+        options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 
             services.AddAuthentication().AddJwtBearer("AzureAD", o =>
             {
@@ -43,8 +46,6 @@ namespace StormhammerServiceREST
 
                 //o.AddAdditionalJWTConfig(isApplicationUser: true);
             });
-
-            services.AddSingleton(typeof(WorldRepository), new WorldRepository());
 
             services.AddAuthorization(options =>
             {
