@@ -12,6 +12,6 @@ namespace StormhammerLibrary.Models
         public string Name { get; set; }
         public long MobRaceId { get; set; }
         public long MobClassId { get; set; }
-        public long OwnerId { get; set; }
+        public string OwnerId { get; set; }
     }
 }

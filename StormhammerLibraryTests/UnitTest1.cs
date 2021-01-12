@@ -14,7 +14,7 @@ namespace StormhammerLibraryTests
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
+        /*[TestMethod]
         public void Login()
         {
             var client = new StormhammerClient("", "", StormhammerLibrary.Models.SystemTypeEnum.Dev);
@@ -35,7 +35,7 @@ namespace StormhammerLibraryTests
             }).Result;
             response.Registered.Should().BeTrue();
         }
-
+        */
         [TestMethod]
         public void MobRaceList()
         {

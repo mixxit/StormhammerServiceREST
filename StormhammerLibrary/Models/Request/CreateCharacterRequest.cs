@@ -6,9 +6,8 @@ namespace StormhammerLibrary.Models.Request
 {
     public class CreateCharacterRequest
     {
-        public long OwnerId { get; set; }
         public string Name { get; set; }
-        public long MobClass { get; set; }
-        public long MobRace { get; set; }
+        public long MobClassId { get; set; }
+        public long MobRaceId { get; set; }
     }
 }

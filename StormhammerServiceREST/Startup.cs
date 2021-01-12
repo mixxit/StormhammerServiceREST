@@ -12,6 +12,9 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using StormhammerLibrary.Models;
+using Swashbuckle.Swagger;
 
 namespace StormhammerServiceREST
 {
@@ -27,37 +30,33 @@ namespace StormhammerServiceREST
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var validAudiences = new List<string> { 
-                Configuration["StormhammerClient:ClientId"], 
+            var validAudiences = new List<string> {
+                Configuration["StormhammerClient:ClientId"],
             };
-            
+
             services.AddControllers();
-            services.AddDbContext<StormhammerContext>(
-        options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+            services.AddDbContext<StormhammerContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
 
-            services.AddAuthentication().AddJwtBearer("AzureAD", o =>
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<StormhammerContext>();
+
+            services.AddRazorPages();
+
+            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
-                o.Authority = $"{Configuration["AzureAD:Instance"]}/{Configuration["AzureAD:TenantId"]}";
-
-                o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
-                {
-                    ValidateAudience = false,
-                };
-
-                //o.AddAdditionalJWTConfig(isApplicationUser: true);
+                microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+                microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
             });
 
-            services.AddAuthorization(options =>
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(c =>
             {
-                options.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().AddAuthenticationSchemes("AzureAD").Build();
+
             });
 
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-            {
-                builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-            }));
+            services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,6 +66,14 @@ namespace StormhammerServiceREST
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stormhammer");
+            });
 
             app.UseCors("CorsPolicy");
             app.UseAuthentication();

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StormhammerLibrary.Models;
 using StormhammerServiceREST.Configuration;
 using System;
@@ -8,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST
 {
-    public class StormhammerContext : DbContext
+    public class StormhammerContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<MobClass> MobClass { get; set; }
         public DbSet<MobRace> MobRace { get; set; }
-        public DbSet<Identity> Identity { get; set; }
+        public DbSet<Mob> Mob { get; set; }
 
         public StormhammerContext(DbContextOptions<StormhammerContext> options)
     : base(options)
@@ -25,10 +26,11 @@ namespace StormhammerServiceREST
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new MobClassConfiguration());
             modelBuilder.ApplyConfiguration(new MobRaceConfiguration());
             modelBuilder.ApplyConfiguration(new MobConfiguration());
-            modelBuilder.ApplyConfiguration(new IdentityConfiguration());
+            //modelBuilder.ApplyConfiguration(new IdentityConfiguration());
         }
     }
 }

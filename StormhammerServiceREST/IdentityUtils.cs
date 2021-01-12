@@ -10,19 +10,14 @@ namespace StormhammerServiceREST
 {
     public class IdentityUtils
     {
-        public static RegisterResponse CreateIdentityIfDoesntExist(StormhammerContext dbContext, string uniqueId)
+        /*public static void CreateIdentityIfDoesntExist(StormhammerContext dbContext, Guid objectId)
         {
-            var identity = dbContext.Identity.FirstOrDefault(e => e.UniqueId.Equals(uniqueId));
+            var identity = dbContext.Identity.FirstOrDefault(e => e.ObjectId.ToString().ToUpper().Equals(objectId.ToString().ToUpper()));
             if (identity == null)
             {
-                identity = dbContext.Identity.Add(new Identity() { UniqueId = uniqueId }).Entity;
+                identity = dbContext.Identity.Add(new Identity() { ObjectId = objectId }).Entity;
                 dbContext.SaveChanges();
             }
-
-            return new RegisterResponse()
-            {
-                Registered = true
-            };
-        }
+        }*/
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using StormhammerLibrary.Models;
 using StormhammerLibrary.Models.Request;
@@ -12,6 +13,8 @@ namespace StormhammerServiceREST.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
+
     public class MobController : ControllerBase
     {
         private readonly ILogger<MobController> _logger;
@@ -27,8 +30,9 @@ namespace StormhammerServiceREST.Controllers
         {
             // stub
             return new OkObjectResult(_dbContext.Mob.FirstOrDefault(e => e.Id == Id));
-        }
+        }*/
 
+        /*
         [HttpPost("ByOwner")]
         public ActionResult<List<Mob>> GetByOwner(long ownerId)
         {

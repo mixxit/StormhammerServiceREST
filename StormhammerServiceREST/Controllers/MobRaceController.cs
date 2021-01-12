@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StormhammerLibrary.Models;
@@ -13,6 +14,8 @@ namespace StormhammerServiceREST.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
+
     public class MobRaceController : ControllerBase
     {
         private readonly ILogger<MobRaceController> _logger;
