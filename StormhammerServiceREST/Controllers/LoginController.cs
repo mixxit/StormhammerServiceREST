@@ -5,6 +5,8 @@ using StormhammerLibrary.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace StormhammerServiceREST.Controllers
@@ -42,11 +44,14 @@ namespace StormhammerServiceREST.Controllers
                     return new LoginResponse() { LoggedIn = false, SessionId = null };
 
                 identity.Username = request.UserName;
-                identity.Password = request.Password;
+
+                identity.Password = Encoding.ASCII.GetBytes(BCrypt.Net.BCrypt.HashPassword(request.Password));
                 _dbContext.SaveChanges();
             }
 
-            if (!_dbContext.Identity.Any(e => e.Username.Equals(request.UserName) && request.Password.Equals(request.Password) && e.UniqueId.Equals(request.UniqueId)))
+            identity = _dbContext.Identity.FirstOrDefault(e => e.Username.Equals(request.UserName) && e.UniqueId.Equals(request.UniqueId));
+
+            if (identity == null || !BCrypt.Net.BCrypt.Verify(request.Password, Encoding.ASCII.GetString(identity.Password)))
                 return new LoginResponse() { LoggedIn = false, SessionId = null };
 
             var sessionId = Guid.NewGuid().ToString();
@@ -55,5 +60,8 @@ namespace StormhammerServiceREST.Controllers
 
             return new LoginResponse() { LoggedIn = true, SessionId = sessionId };
         }
+
+        private static readonly Encoding Encoding1252 = Encoding.GetEncoding(1252);
+
     }
 }

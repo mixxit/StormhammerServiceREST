@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StormhammerServiceREST;
 
 namespace StormhammerServiceREST.Migrations
 {
     [DbContext(typeof(StormhammerContext))]
-    partial class StormhammerContextModelSnapshot : ModelSnapshot
+    [Migration("20210112211326_IdentityBinary")]
+    partial class IdentityBinary
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +28,7 @@ namespace StormhammerServiceREST.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<byte[]>("Password")
+                    b.Property<byte[]>("PasswordHash")
                         .HasColumnType("varbinary(128)")
                         .HasMaxLength(128);
 
