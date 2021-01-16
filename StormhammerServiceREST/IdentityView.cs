@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST
 {
-    /*public class IdentityView
+    public class IdentityView
     {
         public Guid ObjectId { get; set; }
-        public Identity Identity { get; set; }
+        public Account Identity { get; set; }
 
         public static IdentityView FromObjectId(StormhammerContext dbContext, Guid objectId)
         {
             IdentityView identityView = new IdentityView();
             identityView.ObjectId = objectId;
-            identityView.Identity = dbContext.Identity
+            identityView.Identity = dbContext.Account
                 .FirstOrDefault(e => e.ObjectId.ToString().ToUpper().Equals(identityView.ObjectId.ToString().ToUpper()));
             return identityView;
         }
 
-    }*/
+    }
 }

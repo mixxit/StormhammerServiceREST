@@ -14,7 +14,6 @@ namespace StormhammerServiceREST.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
 
     public class MobRaceController : ControllerBase
     {

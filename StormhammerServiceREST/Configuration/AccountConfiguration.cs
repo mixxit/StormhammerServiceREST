@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST.Configuration
 {
-    /*public class IdentityConfiguration : IEntityTypeConfiguration<ApplicationUser>
+    public class AccountConfiguration : IEntityTypeConfiguration<Account>
     {
-        public void Configure(EntityTypeBuilder<ApplicationUser> builder)
+        public void Configure(EntityTypeBuilder<Account> builder)
         {
             builder.HasKey(c => c.Id);
             builder.HasIndex("ObjectId").IsUnique();
-            builder.Property(c => c.SessionId).HasMaxLength(128);
-            builder.Property(c => c.ObjectId).HasMaxLength(128).IsRequired();
+            builder.Property(c => c.Email).HasMaxLength(320);
+            builder.Property(c => c.ObjectId).IsRequired();
         }
-    }*/
+    }
 }

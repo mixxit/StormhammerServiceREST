@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
@@ -12,10 +11,19 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using StormhammerLibrary.Models;
+using Swashbuckle.Swagger;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Newtonsoft.Json;
 
 namespace StormhammerServiceREST
 {
@@ -71,6 +79,15 @@ namespace StormhammerServiceREST
                 };
 
                 //Additional config snipped
+                o.AddAdditionalJWTConfig(isApplicationUser: false, Configuration["NewUser:EmailAdress"], Configuration["AzureAd:Domain"], this.Logger);
+                ).AddJwtBearer("AzureADB2C", o =>
+            {
+                o.Authority = $"{Configuration["AzureAdB2C:Instance"]}/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:SignUpSignInPolicyId"]}/v2.0/";
+                o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidAudiences = validAudiences
+                };
                 o.AddAdditionalJWTConfig(isApplicationUser: false, Configuration["NewUser:EmailAdress"], Configuration["AzureAd:Domain"], this.Logger);
             });
 
@@ -170,10 +187,6 @@ namespace StormhammerServiceREST
             app.UseRouting();
 
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
         }
     }
 }

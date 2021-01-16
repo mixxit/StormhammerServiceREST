@@ -5,15 +5,17 @@ using StormhammerServiceREST.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace StormhammerServiceREST
 {
-    public class StormhammerContext : IdentityDbContext<ApplicationUser>
+    public class StormhammerContext : DbContext
     {
         public DbSet<MobClass> MobClass { get; set; }
         public DbSet<MobRace> MobRace { get; set; }
         public DbSet<Mob> Mob { get; set; }
+        public DbSet<Account> Account { get; set; }
 
         public StormhammerContext(DbContextOptions<StormhammerContext> options)
     : base(options)
@@ -30,7 +32,19 @@ namespace StormhammerServiceREST
             modelBuilder.ApplyConfiguration(new MobClassConfiguration());
             modelBuilder.ApplyConfiguration(new MobRaceConfiguration());
             modelBuilder.ApplyConfiguration(new MobConfiguration());
-            //modelBuilder.ApplyConfiguration(new IdentityConfiguration());
+            modelBuilder.ApplyConfiguration(new AccountConfiguration());
+        }
+
+        internal bool AttemptRegisterUser(ClaimsPrincipal principal, Guid objectId, string email)
+        {
+            var identity = Account.FirstOrDefault(e => e.ObjectId.ToString().ToUpper().Equals(objectId.ToString().ToUpper()));
+            if (identity == null)
+            {
+                identity = Account.Add(new Account() { ObjectId = objectId, Email = email }).Entity;
+                SaveChanges();
+            }
+
+            return true;
         }
     }
 }

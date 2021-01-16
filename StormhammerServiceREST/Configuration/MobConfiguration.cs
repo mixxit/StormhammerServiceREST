@@ -16,7 +16,7 @@ namespace StormhammerServiceREST.Configuration
             builder.Property(c => c.Name).HasMaxLength(50).IsRequired();
             builder.Property(c => c.MobRaceId).IsRequired();
             builder.Property(c => c.MobClassId).IsRequired();
-            builder.Property(c => c.OwnerId);
+            builder.Property(c => c.AccountId);
         }
     }
 }

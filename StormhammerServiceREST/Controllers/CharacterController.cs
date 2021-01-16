@@ -18,9 +18,9 @@ namespace StormhammerServiceREST.Controllers
     [Authorize]
     public class CharacterController : ControllerBase
     {
-        private readonly ILogger<LoginController> _logger;
+        private readonly ILogger<AccountController> _logger;
         private StormhammerContext _dbContext;
-        public CharacterController(ILogger<LoginController> logger, StormhammerContext dbContext)
+        public CharacterController(ILogger<AccountController> logger, StormhammerContext dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;

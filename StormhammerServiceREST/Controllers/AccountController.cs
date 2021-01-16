@@ -7,6 +7,7 @@ using StormhammerLibrary.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,14 +17,21 @@ namespace StormhammerServiceREST.Controllers
     [ApiController]
     [Authorize]
     [Route("[controller]")]
-    public class LoginController : ControllerBase
+    public class AccountController : ControllerBase
     {
-        private readonly ILogger<LoginController> _logger;
+        private readonly ILogger<AccountController> _logger;
         private StormhammerContext _dbContext;
-        public LoginController(ILogger<LoginController> logger, StormhammerContext dbContext)
+        public AccountController(ILogger<AccountController> logger, StormhammerContext dbContext)
         {
             _logger = logger;
             _dbContext = dbContext;
+        }
+
+        [HttpGet]
+        public ActionResult<Account> GetIdentity()
+        {
+            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
+            return new OkObjectResult(identityView);
         }
 
         /*[HttpGet]

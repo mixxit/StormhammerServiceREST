@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 namespace StormhammerServiceREST.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     [Authorize]
-
+    [Route("[controller]")]
     public class MobClassController : ControllerBase
     {
         private readonly ILogger<MobClassController> _logger;

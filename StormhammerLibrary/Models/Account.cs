@@ -5,13 +5,11 @@ using System.Text;
 
 namespace StormhammerLibrary.Models
 {
-    public class Mob
+    public class Account
     {
         public long Id { get; set; }
         [StringLength(50)]
-        public string Name { get; set; }
-        public long MobRaceId { get; set; }
-        public long MobClassId { get; set; }
-        public long? AccountId { get; set; }
+        public string Email { get; set; }
+        public Guid ObjectId { get; set; }
     }
 }
