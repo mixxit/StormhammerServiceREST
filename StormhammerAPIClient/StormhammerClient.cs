@@ -1,6 +1,9 @@
 ﻿using Newtonsoft.Json;
 using StormhammerLibrary.Models;
+using StormhammerLibrary.Models.Request;
+using StormhammerLibrary.Models.Response;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +14,23 @@ namespace StormhammerAPIClient
     public class StormhammerClient : IDisposable
     {
         readonly private Uri serviceUri;
-        readonly private string jwtToken;
+        private string jwtToken = "";
 
-        public StormhammerClient(String appId, String userSecret, SystemTypeEnum systemType = SystemTypeEnum.Dev)
+        public StormhammerClient(String userName, String password, SystemTypeEnum systemType = SystemTypeEnum.Dev)
         {
             this.serviceUri = GetServiceUriForSystemType(systemType);
-            this.jwtToken = GetAuthTokenForSystemType(appId, userSecret, systemType);
+
+            try
+            {
+                var response = Task.Run(async () =>
+                {
+                    return await LoginAndSetTokenAsync(userName, password).ConfigureAwait(true);
+                }).Result;
+            }
+            catch (Exception e)
+            {
+                // Do nothing, probably not logged in
+            }
         }
 
         private Uri GetServiceUriForSystemType(SystemTypeEnum systemType)
@@ -32,29 +46,76 @@ namespace StormhammerAPIClient
             }
         }
 
-        private string GetToken(string clientId, string authority, string secret)
+        public async Task<LoginResponse> LoginAndSetTokenAsync(string userName, string password)
         {
-            /*return Task.Run(async () =>
+            using (var client = HttpClientFactory.CreateClient(serviceUri, jwtToken))
             {
-                return await SecretAuthentication.AuthAsync(clientId,
-              authority,
-              secret,
-              new List<string>() { String.Format(clientId + "/.default") }).ConfigureAwait(false);
-            }).Result.AccessToken;*/
+                var request = new LoginRequest()
+                {
+                    email = userName,
+                    password = password
+                };
 
-            return "";
+                var json = JsonConvert.SerializeObject(request);
+
+                HttpResponseMessage responseMessage = await client.PostAsync($"/Auth/Login", new StringContent(json, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var response = JsonConvert.DeserializeObject<LoginResponse>(responseJson);
+                    this.jwtToken = response.token;
+                    return JsonConvert.DeserializeObject<LoginResponse>(responseJson);
+                }
+                else
+                {
+                    this.jwtToken = "";
+                    return new LoginResponse()
+                    {
+                        token = ""
+                };
+            }
+            }
         }
 
-        private string GetAuthTokenForSystemType(String appId, String secret, SystemTypeEnum systemType)
+        public async Task<RegisterResponse> RegisterAsync(string userName, string password, string confirmPassword)
         {
-            switch (systemType)
+            using (var client = HttpClientFactory.CreateClient(serviceUri, jwtToken))
             {
-                case SystemTypeEnum.Local:
-                    return GetToken(appId, "https://login.microsoftonline.com/stormhammer.onmicrosoft.com/v2.0", secret);
-                case SystemTypeEnum.Dev:
-                    return GetToken(appId, "https://login.microsoftonline.com/stormhammer.onmicrosoft.com/v2.0", secret);
-                default:
-                    return GetAuthTokenForSystemType(appId, secret, SystemTypeEnum.Local);
+                var request = new RegisterRequest()
+                {
+                    email = userName,
+                    password = password,
+                    confirmPassword = confirmPassword
+                };
+
+                var json = JsonConvert.SerializeObject(request);
+
+                HttpResponseMessage responseMessage = await client.PostAsync($"/Register", new StringContent(json, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    return JsonConvert.DeserializeObject<RegisterResponse>(responseJson);
+                }
+                else
+                {
+                    var errors = new List<string>();
+                    try
+                    {
+                        var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        errors = JsonConvert.DeserializeObject<RegisterResponse>(responseJson).errors;
+                    } catch (Exception)
+                    {
+
+                    }
+
+                    return new RegisterResponse()
+                    {
+                        succeeded = false,
+                        errors = errors
+                    };
+                }
             }
         }
 

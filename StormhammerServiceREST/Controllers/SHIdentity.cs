@@ -57,6 +57,17 @@ namespace StormhammerServiceREST.Controllers
 
                         }
                         continue;
+                    case "UserId":
+                        try
+                        {
+                            var objectId = Guid.Parse(claim.Value);
+                            identity.ObjectId = objectId;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        continue;
                     case "company":
                     case "extn.company":
                     case "extension_company":

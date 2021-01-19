@@ -10,7 +10,7 @@ namespace StormhammerServiceREST
 {
     public static class JwtBearerOptionsExtensions
     {
-        public static void AddAdditionalJWTConfig(this JwtBearerOptions options, bool isApplicationUser, string alertEmail, string azureAdDomain, ILogger logger)
+        public static void AddAdditionalJWTConfig(this JwtBearerOptions options, ILogger logger)
         {
             options.Events = new JwtBearerEvents
             {
@@ -21,12 +21,12 @@ namespace StormhammerServiceREST
                         //Get the calling app client id that came from the token produced by Azure AD
                         string objectId = ctx.Principal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier") ??
                         ctx.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier") ??
-                        ctx.Principal.FindFirstValue("appid");
+                        ctx.Principal.FindFirstValue("appid") ??
+                        ctx.Principal.FindFirstValue("UserId");
 
                         string email = ctx.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress") ??
                         ctx.Principal.FindFirstValue("emails") ??
                         ctx.Principal.FindFirstValue("extension_Email");
-
 
                         var db = ctx.HttpContext.RequestServices.GetRequiredService<StormhammerContext>();
                         if (db.AttemptRegisterUser(ctx.Principal, Guid.Parse(objectId), email) == true)

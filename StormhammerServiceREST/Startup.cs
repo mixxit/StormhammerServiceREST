@@ -83,6 +83,8 @@ namespace StormhammerServiceREST
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:Key"])),
                     ClockSkew = TimeSpan.Zero
                 };
+                options.AddAdditionalJWTConfig(this.Logger);
+
             });
 
             services.AddAuthorization(options =>
