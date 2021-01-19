@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using StormhammerAPIClient;
 using StormhammerLibrary;
 using StormhammerLibrary.Models;
 using StormhammerLibrary.Models.Request;

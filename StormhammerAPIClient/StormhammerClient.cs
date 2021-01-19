@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using StormhammerLibrary.Models;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace StormhammerLibrary
+namespace StormhammerAPIClient
 {
     public class StormhammerClient : IDisposable
     {
@@ -16,7 +14,7 @@ namespace StormhammerLibrary
         readonly private string jwtToken;
 
         public StormhammerClient(String appId, String userSecret, SystemTypeEnum systemType = SystemTypeEnum.Dev)
-        { 
+        {
             this.serviceUri = GetServiceUriForSystemType(systemType);
             this.jwtToken = GetAuthTokenForSystemType(appId, userSecret, systemType);
         }
@@ -80,7 +78,7 @@ namespace StormhammerLibrary
             }
         }
 
-        public async Task<R> PostRequestAsync<Q,R>(string endpoint, Q request)
+        public async Task<R> PostRequestAsync<Q, R>(string endpoint, Q request)
         {
             using (var client = HttpClientFactory.CreateClient(serviceUri, jwtToken))
             {
