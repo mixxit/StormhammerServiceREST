@@ -2,14 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using StormhammerLibrary.Models;
 using StormhammerLibrary.Models.Request;
 using StormhammerLibrary.Models.Response;
 using StormhammerServiceREST.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -19,16 +17,15 @@ using System.Threading.Tasks;
 namespace StormhammerServiceREST.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("[controller]")]
-    public class AccountController : ControllerBase
+    public class RegisterController : ControllerBase
     {
         private readonly ILogger<AccountController> _logger;
         private StormhammerContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AccountController(ILogger<AccountController> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
+        public RegisterController(ILogger<AccountController> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> signInManager)
         {
             _logger = logger;
@@ -37,11 +34,33 @@ namespace StormhammerServiceREST.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpGet]
-        public ActionResult<Account> GetIdentity()
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
-            return new OkObjectResult(identityView);
+            if (ModelState.IsValid)
+            {
+                var user = new IdentityUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return new OkObjectResult(result);
+                }
+
+                var errors = "";
+                if (result?.Errors != null && result.Errors.Count() > 0)
+                    errors = String.Join(",", result.Errors.Select(e => e.Description));
+                return new UnauthorizedObjectResult($"Invalid Login Attempt [{errors}]");
+
+            }
+
+            return new OkObjectResult(model);
         }
 
         /*[HttpGet]

@@ -10,16 +10,19 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST
 {
-    public class StormhammerContext : DbContext
+    public class StormhammerContext : IdentityDbContext
     {
         public DbSet<MobClass> MobClass { get; set; }
         public DbSet<MobRace> MobRace { get; set; }
         public DbSet<Mob> Mob { get; set; }
         public DbSet<Account> Account { get; set; }
 
+        private readonly DbContextOptions _options;
         public StormhammerContext(DbContextOptions<StormhammerContext> options)
     : base(options)
-        { }
+        {
+            _options = options;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -16,6 +16,11 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace StormhammerServiceREST
 {
@@ -60,41 +65,33 @@ namespace StormhammerServiceREST
             // order is vital, this *must* be called *after* AddNewtonsoftJson()
             services.AddSwaggerGenNewtonsoftSupport();
 
-            services.AddAuthentication().AddJwtBearer("AzureADB2C", o =>
+            services.AddAuthentication(options =>
             {
-                o.Authority = $"{Configuration["AzureAdB2C:Instance"]}/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:SignUpSignInPolicyId"]}/v2.0/";
-
-                o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidAudiences = validAudiences
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    //ValidIssuer = jwtSettings.Issuer,
+                    //ValidAudience = jwtSettings.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Token:Key"])),
+                    ClockSkew = TimeSpan.Zero
                 };
-
-                //Additional config snipped
-                o.AddAdditionalJWTConfig(isApplicationUser: false, Configuration["NewUser:EmailAdress"], Configuration["AzureAd:Domain"], this.Logger);
-            }).AddJwtBearer("email", o =>
-            {
-                o.Authority = $"{Configuration["AzureAdB2C:Instance"]}/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:EmailSignUpSignInPolicyId"]}/v2.0/";
-
-                o.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidAudiences = validAudiences
-                };
-
-                //Additional config snipped
-                o.AddAdditionalJWTConfig(isApplicationUser: false, Configuration["NewUser:EmailAdress"], Configuration["AzureAd:Domain"], this.Logger);
-            }).AddSteam("steam", o =>
-            {
-                o.ApplicationKey = "6235A3BC6BB82971121A43157BAECDB1";
-                o.SaveTokens = true;
             });
 
             services.AddAuthorization(options =>
             {
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes("AzureADB2C","email", "steam")
+                .AddAuthenticationSchemes(
+                    "Bearer"
+                    )
                 .Build();
             });
 
@@ -104,6 +101,9 @@ namespace StormhammerServiceREST
                     builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                 }),
                 ServiceLifetime.Transient);
+
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<StormhammerContext>().AddDefaultTokenProviders(); ;
+
             services.AddOptions();
 
             services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
@@ -117,65 +117,30 @@ namespace StormhammerServiceREST
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StormhammerServiceREST", Version = "v1" });
-                //c.OperationFilter<FileUploadOperationFilter>();
-                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
+                    Description = "JWT containing userid claim",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                });
+
+                var security =
+                    new OpenApiSecurityRequirement
                     {
-                        Implicit = new OpenApiOAuthFlow
                         {
-                            AuthorizationUrl = new Uri($"{Configuration["AzureAdB2C:LoginRootURL"]}/tfp/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:SignUpSignInPolicyId"]}/oauth2/v2.0/authorize"),
-                            TokenUrl = new Uri($"{Configuration["AzureAdB2C:LoginRootURL"]}/tfp/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:SignUpSignInPolicyId"]}/oauth2/v2.0/token"),
-                            Scopes = new Dictionary<string, string>
+                            new OpenApiSecurityScheme
                             {
-                                { $"{Configuration["AzureAdB2C:AppIDURL"]}/user_impersonation", "user_impersonation" }
-                            }
+                                Reference = new OpenApiReference
+                                {
+                                    Id = "Bearer",
+                                    Type = ReferenceType.SecurityScheme
+                                },
+                                UnresolvedReference = true
+                            },
+                            new List<string>()
                         }
-                    }
-                });
-
-                c.AddSecurityDefinition("email", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        Implicit = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl = new Uri($"{Configuration["AzureAdB2C:LoginRootURL"]}/tfp/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:EmailSignUpSignInPolicyId"]}/oauth2/v2.0/authorize"),
-                            TokenUrl = new Uri($"{Configuration["AzureAdB2C:LoginRootURL"]}/tfp/{Configuration["AzureAdB2C:TenantId"]}/{Configuration["AzureAdB2C:EmailSignUpSignInPolicyId"]}/oauth2/v2.0/token"),
-                            Scopes = new Dictionary<string, string>
-                            {
-                                { $"{Configuration["AzureAdB2C:AppIDURL"]}/user_impersonation", "user_impersonation" }
-                            }
-                        }
-                    }
-                });
-
-                c.AddSecurityDefinition("steam", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OpenIdConnect,
-                    OpenIdConnectUrl = new Uri("http://steamcommunity.com/openid")
-                });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
-                    { new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2" }
-                        }, new[] { "user_impersonation" }
-                    },
-                    { new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "email" }
-                        }, new[] { "user_impersonation" }
-                    },
-                    { new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "steam" }
-                        }, new string[] { }
-                    },
-                });
-
+                    }; c.AddSecurityRequirement(security);
             });
 
             services.AddMvc().AddNewtonsoftJson(o =>
@@ -211,16 +176,16 @@ namespace StormhammerServiceREST
             {
                 c.OAuthClientId(Configuration["Swagger:ClientId"]);
                 c.OAuthRealm(Configuration["AzureAdB2C:ClientId"]);
-                c.OAuthAppName("Stormhammer");
+                c.OAuthAppName("StormhammerServiceREST");
                 c.OAuthScopeSeparator(" ");
                 c.OAuthAdditionalQueryStringParams(new Dictionary<string, string> { { "resource", Configuration["AzureAdB2C:ClientId"] } });
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Stormhammer");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "StormhammerServiceREST");
             });
             app.UseExceptionHandler("/api/Error");
 
             app.UseRouting();
-
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
