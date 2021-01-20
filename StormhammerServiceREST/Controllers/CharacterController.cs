@@ -27,7 +27,7 @@ namespace StormhammerServiceREST.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Mob> CreateCharacter(CreateCharacterRequest request)
+        public ActionResult<CreateCharacterResponse> CreateCharacter(CreateCharacterRequest request)
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
             if (identityView.Identity == null)
@@ -44,7 +44,8 @@ namespace StormhammerServiceREST.Controllers
                 MobClassId = request.MobClassId,
                 MobRaceId = request.MobRaceId,
                 AccountId = identityView.Identity.Id,
-                Name = request.Name
+                Name = request.Name,
+                ZoneId = 1
             };
 
             if (_dbContext.Mob.Any(e => e.AccountId == identityView.Identity.Id && e.Name.Equals(mob.Name)))
@@ -52,7 +53,30 @@ namespace StormhammerServiceREST.Controllers
 
             mob = _dbContext.Mob.Add(mob).Entity;
             _dbContext.SaveChanges();
-            return new OkObjectResult(mob);
+            var response = new CreateCharacterResponse();
+            response.Mob = mob;
+            return new OkObjectResult(response);
+        }
+
+        [HttpDelete]
+        public ActionResult DeleteCharacter(long id)
+        {
+            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
+            if (identityView.Identity == null)
+                return new UnauthorizedResult();
+
+            if (id < 1)
+                return new BadRequestResult();
+
+            var mob = _dbContext.Mob.FirstOrDefault(e => e.Id == id && e.AccountId == identityView.Identity.Id);
+
+            if (mob == null)
+                return new UnauthorizedResult();
+
+            _dbContext.Mob.Remove(mob);
+            _dbContext.SaveChanges();
+
+            return new OkResult();
         }
     }
 }

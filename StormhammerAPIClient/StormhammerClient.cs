@@ -139,6 +139,26 @@ namespace StormhammerAPIClient
             }
         }
 
+        public async Task<bool> DeleteRequestAsync(string endpoint, long id)
+        {
+            using (var client = HttpClientFactory.CreateClient(serviceUri, jwtToken))
+            {
+                HttpResponseMessage responseMessage = await client.DeleteAsync($"/{endpoint}/?id={id}").ConfigureAwait(false);
+                
+                var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Received response code: " + responseMessage.StatusCode + " " + responseJson);
+                    throw new HttpResponseException(responseMessage);
+                }
+            }
+        }
+
         public async Task<R> PostRequestAsync<Q, R>(string endpoint, Q request)
         {
             using (var client = HttpClientFactory.CreateClient(serviceUri, jwtToken))
