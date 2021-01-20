@@ -36,8 +36,8 @@ namespace StormhammerServiceREST.Controllers
             if (request == null || String.IsNullOrEmpty(request.Name))
                 return new BadRequestResult();
 
-            if (_dbContext.Mob.Count(e => e.AccountId == identityView.Identity.Id) > 4)
-                return new BadRequestObjectResult("Limit of 4 characters");
+            if (_dbContext.Mob.Count(e => e.AccountId == identityView.Identity.Id) > 2)
+                return new BadRequestObjectResult("Limit of 3 characters");
 
             var mob = new Mob()
             {
