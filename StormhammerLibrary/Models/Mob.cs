@@ -13,5 +13,9 @@ namespace StormhammerLibrary.Models
         public long MobRaceId { get; set; }
         public long MobClassId { get; set; }
         public long? AccountId { get; set; }
+        public long ZoneId { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
     }
 }

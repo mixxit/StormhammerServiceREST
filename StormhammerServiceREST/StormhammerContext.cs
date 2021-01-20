@@ -36,6 +36,7 @@ namespace StormhammerServiceREST
             modelBuilder.ApplyConfiguration(new MobRaceConfiguration());
             modelBuilder.ApplyConfiguration(new MobConfiguration());
             modelBuilder.ApplyConfiguration(new AccountConfiguration());
+            modelBuilder.ApplyConfiguration(new ZoneConfiguration());
         }
 
         internal bool AttemptRegisterUser(ClaimsPrincipal principal, Guid objectId, string email)

@@ -25,31 +25,34 @@ namespace StormhammerServiceREST.Controllers
             _logger = logger;
             _dbContext = dbContext;
         }
-        /*
+
         [HttpPost]
         public ActionResult<Mob> CreateCharacter(CreateCharacterRequest request)
         {
-            var identityView = IdentityView.FromObjectId(this._dbContext, (ApplicationUser.FromPrincipal(User)).ObjectId);
+            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
             if (identityView.Identity == null)
                 return new UnauthorizedResult();
 
             if (request == null || String.IsNullOrEmpty(request.Name))
                 return new BadRequestResult();
 
+            if (_dbContext.Mob.Count(e => e.AccountId == identityView.Identity.Id) > 4)
+                return new BadRequestObjectResult("Limit of 4 characters");
+
             var mob = new Mob()
             {
                 MobClassId = request.MobClassId,
                 MobRaceId = request.MobRaceId,
-                OwnerId = identityView.Identity.Id,
+                AccountId = identityView.Identity.Id,
                 Name = request.Name
             };
 
-            if (_dbContext.Mob.Any(e => e.OwnerId == identityView.Identity.Id && e.Name.Equals(mob.Name)))
+            if (_dbContext.Mob.Any(e => e.AccountId == identityView.Identity.Id && e.Name.Equals(mob.Name)))
                 return new ConflictResult();
 
             mob = _dbContext.Mob.Add(mob).Entity;
             _dbContext.SaveChanges();
             return new OkObjectResult(mob);
-        }*/
+        }
     }
 }

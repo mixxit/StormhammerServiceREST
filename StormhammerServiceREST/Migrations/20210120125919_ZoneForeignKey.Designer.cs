@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StormhammerServiceREST;
 
 namespace StormhammerServiceREST.Migrations
 {
     [DbContext(typeof(StormhammerContext))]
-    partial class StormhammerContextModelSnapshot : ModelSnapshot
+    [Migration("20210120125919_ZoneForeignKey")]
+    partial class ZoneForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,18 +276,18 @@ namespace StormhammerServiceREST.Migrations
                         .HasDefaultValueSql("0");
 
                     b.Property<long>("ZoneId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
                         .HasDefaultValueSql("1");
 
+                    b.Property<long?>("ZoneId1")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("MobClassId");
-
-                    b.HasIndex("MobRaceId");
-
                     b.HasIndex("ZoneId");
+
+                    b.HasIndex("ZoneId1");
 
                     b.ToTable("Mob");
                 });
@@ -409,27 +411,15 @@ namespace StormhammerServiceREST.Migrations
 
             modelBuilder.Entity("StormhammerLibrary.Models.Mob", b =>
                 {
-                    b.HasOne("StormhammerLibrary.Models.Account", null)
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("StormhammerLibrary.Models.MobClass", null)
-                        .WithMany()
-                        .HasForeignKey("MobClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StormhammerLibrary.Models.MobRace", null)
-                        .WithMany()
-                        .HasForeignKey("MobRaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("StormhammerLibrary.Models.Zone", null)
                         .WithMany()
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("StormhammerLibrary.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId1");
                 });
 #pragma warning restore 612, 618
         }

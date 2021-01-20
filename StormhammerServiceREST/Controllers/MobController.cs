@@ -32,12 +32,17 @@ namespace StormhammerServiceREST.Controllers
             return new OkObjectResult(_dbContext.Mob.FirstOrDefault(e => e.Id == Id));
         }*/
 
-        /*
-        [HttpPost("ByOwner")]
-        public ActionResult<List<Mob>> GetByOwner(long ownerId)
+        [HttpGet("ByOwned")]
+        public ActionResult<List<Mob>> GetByOwned()
         {
+            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(User)).ObjectId);
+            if (identityView.Identity == null)
+                return new UnauthorizedResult();
+
             // stub
-            return new OkObjectResult(_dbContext.Mob.Where(e => e.OwnerId == ownerId));
-        }*/
+            return new OkObjectResult(_dbContext.Mob.Where(e => e.AccountId == identityView.Identity.Id));
+        }
+
+
     }
 }
