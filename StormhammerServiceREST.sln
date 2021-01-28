@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerLibrary", "Storm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerLibraryTests", "StormhammerLibraryTests\StormhammerLibraryTests.csproj", "{7A747053-96A9-46F8-ACB3-9AF252672D12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StormhammerAPIClient", "StormhammerAPIClient\StormhammerAPIClient.csproj", "{92205D17-96CB-4006-AB6C-7890DB691C0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerAPIClient", "StormhammerAPIClient\StormhammerAPIClient.csproj", "{92205D17-96CB-4006-AB6C-7890DB691C0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

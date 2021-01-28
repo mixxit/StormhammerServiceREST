@@ -21,6 +21,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 
 namespace StormhammerServiceREST
 {
@@ -41,6 +43,8 @@ namespace StormhammerServiceREST
             var validAudiences = new List<string> {
                 Configuration["AzureAdB2C:ClientId"]
             };
+
+            services.AddSingleton<IUserIdProvider, UserIdClaimProvider>();
 
             // DE-1558
             services.Configure<KestrelServerOptions>(options =>
@@ -65,6 +69,15 @@ namespace StormhammerServiceREST
             // order is vital, this *must* be called *after* AddNewtonsoftJson()
             services.AddSwaggerGenNewtonsoftSupport();
 
+            services.AddDbContext<StormhammerContext>(options =>
+    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), builder =>
+    {
+        builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+    }),
+    ServiceLifetime.Transient);
+
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<StormhammerContext>().AddDefaultTokenProviders();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -84,7 +97,6 @@ namespace StormhammerServiceREST
                     ClockSkew = TimeSpan.Zero
                 };
                 options.AddAdditionalJWTConfig(this.Logger);
-
             });
 
             services.AddAuthorization(options =>
@@ -96,15 +108,6 @@ namespace StormhammerServiceREST
                     )
                 .Build();
             });
-
-            services.AddDbContext<StormhammerContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), builder =>
-                {
-                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                }),
-                ServiceLifetime.Transient);
-
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<StormhammerContext>().AddDefaultTokenProviders(); ;
 
             services.AddOptions();
 
@@ -145,11 +148,16 @@ namespace StormhammerServiceREST
                     }; c.AddSecurityRequirement(security);
             });
 
+            services.AddSignalR().AddMessagePackProtocol();
+
             services.AddMvc().AddNewtonsoftJson(o =>
             {
                 o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            //services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -190,6 +198,7 @@ namespace StormhammerServiceREST
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<ZoneHub>("/zonehub");
                 endpoints.MapControllers();
             });
         }

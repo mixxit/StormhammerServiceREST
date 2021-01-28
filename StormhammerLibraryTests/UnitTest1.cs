@@ -139,5 +139,15 @@ namespace StormhammerLibraryTests
             }).Result;
             response.Count().Should().BeGreaterThan(0);
         }
+
+        [TestMethod]
+        public void SignalR_Test()
+        {
+            Task.Run(async () =>
+            {
+                await this.client.TestAsync();
+            });
+            Console.WriteLine("Test");
+        }
     }
 }

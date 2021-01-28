@@ -11,7 +11,7 @@ using System.Web.Http;
 
 namespace StormhammerAPIClient
 {
-    public class StormhammerClient : IDisposable
+    public partial class StormhammerClient : IDisposable
     {
         readonly private Uri serviceUri;
         private string jwtToken = "";

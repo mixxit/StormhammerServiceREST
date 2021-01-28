@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ZoneClientTest": {
+      "commandName": "Project",
+      "commandLineArgs": "stormhammerservicerestdev.azurewebsites.net"
+    }
+  }
+}
