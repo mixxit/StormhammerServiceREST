@@ -20,8 +20,10 @@ namespace StormhammerServiceREST
 
                     // If the request is for our hub...
                     var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        (path.StartsWithSegments("/zonehub")))
+                    if (!string.IsNullOrEmpty(accessToken) 
+                        && path.StartsWithSegments("/zonehub") 
+                        //&& path.StartsWithSegments("/identityhub") 
+                        )
                     {
                         // Read the token out of the query string
                         context.Token = accessToken;

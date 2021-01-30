@@ -11,7 +11,7 @@ namespace StormhammerServiceREST
         public string GetUserId(HubConnectionContext connection)
         {
             var claims = connection.User.Claims.ToList();
-            return claims.First(x => x.Type == "UserId").Value;
+            return claims.FirstOrDefault(x => x.Type == "UserId")?.Value;
         }
     }
 }

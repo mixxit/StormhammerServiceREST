@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace StormhammerServiceREST
+namespace StormhammerServiceREST.Hubs
 {
     [Authorize]
     public class ZoneHub : Hub
@@ -31,7 +31,6 @@ namespace StormhammerServiceREST
 
             if (!Context.User.Identity.IsAuthenticated)
                 return;
-
             Clients.All.SendAsync("ReceiveMessage", identityView.Identity.ObjectId, line);
         }
     }

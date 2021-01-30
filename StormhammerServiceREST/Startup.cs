@@ -23,6 +23,7 @@ using IdentityServer4.AccessTokenValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using StormhammerServiceREST.Hubs;
 
 namespace StormhammerServiceREST
 {
@@ -198,6 +199,7 @@ namespace StormhammerServiceREST
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<IdentityHub>("/identityhub");
                 endpoints.MapHub<ZoneHub>("/zonehub");
                 endpoints.MapControllers();
             });
