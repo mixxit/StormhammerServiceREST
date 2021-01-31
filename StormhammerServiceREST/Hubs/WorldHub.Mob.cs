@@ -12,7 +12,7 @@ namespace StormhammerServiceREST.Hubs
     public partial class WorldHub : Hub
     {
         [Authorize]
-        public async Task GetMobsByOwnerId(string id)
+        public async Task GetMobsByOwnerId()
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);
             if (identityView.Identity == null)
