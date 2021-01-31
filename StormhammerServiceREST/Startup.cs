@@ -199,8 +199,7 @@ namespace StormhammerServiceREST
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<IdentityHub>("/identityhub");
-                endpoints.MapHub<ZoneHub>("/zonehub");
+                endpoints.MapHub<WorldHub>("/worldhub");
                 endpoints.MapControllers();
             });
         }

@@ -17,14 +17,14 @@ using StormhammerLibrary.Models;
 
 namespace StormhammerServiceREST.Hubs
 {
-    public class IdentityHub : Hub
+    public partial class WorldHub : Hub
     {
-        private readonly ILogger<IdentityHub> _logger;
+        private readonly ILogger<WorldHub> _logger;
         private StormhammerContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IConfiguration _configuration;
-        public IdentityHub(ILogger<IdentityHub> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
+        public WorldHub(ILogger<WorldHub> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> signInManager, IConfiguration configuration)
         {
             _logger = logger;
@@ -59,5 +59,6 @@ namespace StormhammerServiceREST.Hubs
                 await Clients.Client(Context.ConnectionId).SendAsync("LoginResponse", "", "");
             }
         }
+
     }
 }

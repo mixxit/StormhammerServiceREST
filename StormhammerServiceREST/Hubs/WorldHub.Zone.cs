@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST.Hubs
 {
-    public partial class ZoneHub : Hub
+    public partial class WorldHub : Hub
     {
         
     }

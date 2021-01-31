@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using StormhammerLibrary.Models;
 using StormhammerServiceREST.Controllers;
 using System;
@@ -8,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST.Hubs
 {
-    public partial class ZoneHub : Hub
+    public partial class WorldHub : Hub
     {
-        public async Task GetMobClasses()
+        [Authorize]
+        public async Task GetMobsByOwnerId(string id)
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);
             if (identityView.Identity == null)
@@ -18,10 +20,11 @@ namespace StormhammerServiceREST.Hubs
             if (!Context.User.Identity.IsAuthenticated)
                 return;
 
-            if (_dbContext.MobClass != null)
-                await Clients.Client(Context.ConnectionId).SendAsync("MobClassesResponse", "", _dbContext.MobClass.ToList());
+            var mobs = _dbContext.Mob.Where(e => e.AccountId == identityView.Identity.Id);
+            if (mobs != null)
+                await Clients.Client(Context.ConnectionId).SendAsync("MobsByOwnerIdResponse", "", mobs.ToList());
             else
-                await Clients.Client(Context.ConnectionId).SendAsync("MobClassesResponse", "", new List<MobClass>());
+                await Clients.Client(Context.ConnectionId).SendAsync("MobsByOwnerIdResponse", "", new List<Mob>());
         }
     }
 }

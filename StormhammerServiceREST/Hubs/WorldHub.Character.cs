@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using StormhammerLibrary.Models;
 using StormhammerLibrary.Models.Request;
 using StormhammerLibrary.Models.Response;
@@ -10,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace StormhammerServiceREST.Hubs
 {
-    public partial class ZoneHub : Hub
+    public partial class WorldHub : Hub
     {
+        [Authorize]
         public async Task CreateCharacter(CreateCharacterRequest request)
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);
@@ -46,6 +48,7 @@ namespace StormhammerServiceREST.Hubs
             await Clients.Client(Context.ConnectionId).SendAsync("CreateCharacterResponse", "", response);
         }
 
+        [Authorize]
         public async Task DeleteCharacter(long id)
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);
