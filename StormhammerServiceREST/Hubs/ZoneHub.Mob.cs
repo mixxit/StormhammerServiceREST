@@ -18,7 +18,11 @@ namespace StormhammerServiceREST.Hubs
             if (!Context.User.Identity.IsAuthenticated)
                 return;
 
-            await Clients.Client(Context.ConnectionId).SendAsync("MobsByOwnerIdResponse", "", _dbContext.Mob.Where(e => e.AccountId == identityView.Identity.Id).ToList());
+            var mobs = _dbContext.Mob.Where(e => e.AccountId == identityView.Identity.Id);
+            if (mobs != null)
+                await Clients.Client(Context.ConnectionId).SendAsync("MobsByOwnerIdResponse", "", mobs.ToList());
+            else
+                await Clients.Client(Context.ConnectionId).SendAsync("MobsByOwnerIdResponse", "", new List<Mob>());
         }
     }
 }

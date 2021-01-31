@@ -43,7 +43,7 @@ namespace StormhammerServiceREST.Hubs
             var response = new CreateCharacterResponse();
             response.Mob = mob;
 
-            await Clients.Client(Context.ConnectionId).SendAsync("CreateCharacter", "", response);
+            await Clients.Client(Context.ConnectionId).SendAsync("CreateCharacterResponse", "", response);
         }
 
         public async Task DeleteCharacter(long id)
@@ -65,7 +65,7 @@ namespace StormhammerServiceREST.Hubs
             _dbContext.Mob.Remove(mob);
             _dbContext.SaveChanges();
 
-            await Clients.Client(Context.ConnectionId).SendAsync("DeleteCharacter", "",id);
+            await Clients.Client(Context.ConnectionId).SendAsync("DeleteCharacterResponse", "",id);
         }
     }
 }

@@ -18,7 +18,10 @@ namespace StormhammerServiceREST.Hubs
             if (!Context.User.Identity.IsAuthenticated)
                 return;
 
-            await Clients.Client(Context.ConnectionId).SendAsync("MobClassesResponse", "", _dbContext.MobClass.ToList());
+            if (_dbContext.MobClass != null)
+                await Clients.Client(Context.ConnectionId).SendAsync("MobClassesResponse", "", _dbContext.MobClass.ToList());
+            else
+                await Clients.Client(Context.ConnectionId).SendAsync("MobClassesResponse", "", new List<MobClass>());
         }
     }
 }
