@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerLibrary", "Storm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerLibraryTests", "StormhammerLibraryTests\StormhammerLibraryTests.csproj", "{7A747053-96A9-46F8-ACB3-9AF252672D12}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StormhammerAPIClient", "StormhammerAPIClient\StormhammerAPIClient.csproj", "{92205D17-96CB-4006-AB6C-7890DB691C0F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{7A747053-96A9-46F8-ACB3-9AF252672D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A747053-96A9-46F8-ACB3-9AF252672D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A747053-96A9-46F8-ACB3-9AF252672D12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92205D17-96CB-4006-AB6C-7890DB691C0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92205D17-96CB-4006-AB6C-7890DB691C0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92205D17-96CB-4006-AB6C-7890DB691C0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92205D17-96CB-4006-AB6C-7890DB691C0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

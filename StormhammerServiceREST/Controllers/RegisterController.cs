@@ -20,12 +20,12 @@ namespace StormhammerServiceREST.Controllers
     [Route("[controller]")]
     public class RegisterController : ControllerBase
     {
-        private readonly ILogger<AccountController> _logger;
+        private readonly ILogger<RegisterController> _logger;
         private StormhammerContext _dbContext;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
-        public RegisterController(ILogger<AccountController> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
+        public RegisterController(ILogger<RegisterController> logger, StormhammerContext dbContext, UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> signInManager)
         {
             _logger = logger;
@@ -62,30 +62,5 @@ namespace StormhammerServiceREST.Controllers
 
             return new OkObjectResult(model);
         }
-
-        /*[HttpGet]
-        public ActionResult<Identity> GetIdentity()
-        {
-            var identityView = IdentityView.FromObjectId(this._dbContext, (Identity.FromPrincipal(User)).ObjectId);
-            if (identityView.Identity == null)
-                return new UnauthorizedResult();
-
-            return new OkObjectResult(identityView.Identity);
-        }*/
-
-        /*
-        [HttpPost]
-        public ActionResult<bool> Login()
-        {
-            var identityView = IdentityView.FromObjectId(this._dbContext, (Identity.FromPrincipal(User)).ObjectId);
-            IdentityUtils.CreateIdentityIfDoesntExist(_dbContext, identityView.ObjectId);
-            var identity = _dbContext.Identity.FirstOrDefault(e => e.ObjectId.Equals(identityView.ObjectId));
-            var sessionId = Guid.NewGuid().ToString();
-            identity.SessionId = sessionId;
-            _dbContext.SaveChanges();
-            // stub
-            return new OkResult();
-        }
-        */
     }
 }
