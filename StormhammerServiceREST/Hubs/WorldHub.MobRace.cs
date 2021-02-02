@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using StormhammerLibrary.Models;
 using StormhammerServiceREST.Controllers;
 using System;
@@ -21,9 +22,9 @@ namespace StormhammerServiceREST.Hubs
                 return;
 
             if (_dbContext.MobRace != null)
-                await Clients.Client(Context.ConnectionId).SendAsync("MobRacesResponse", "", _dbContext.MobRace.ToList());
+                await Clients.Client(Context.ConnectionId).SendAsync("MobRacesResponse", "", JsonConvert.SerializeObject(_dbContext.MobRace.ToList()));
             else
-                await Clients.Client(Context.ConnectionId).SendAsync("MobRacesResponse", "", new List<MobRace>());
+                await Clients.Client(Context.ConnectionId).SendAsync("MobRacesResponse", "", JsonConvert.SerializeObject(new List<MobRace>()));
         }
     }
 }

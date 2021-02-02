@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using StormhammerLibrary.Models;
 using StormhammerLibrary.Models.Request;
 using StormhammerLibrary.Models.Response;
@@ -45,7 +46,7 @@ namespace StormhammerServiceREST.Hubs
             var response = new CreateCharacterResponse();
             response.Mob = mob;
 
-            await Clients.Client(Context.ConnectionId).SendAsync("CreateCharacterResponse", "", response);
+            await Clients.Client(Context.ConnectionId).SendAsync("CreateCharacterResponse", "", JsonConvert.SerializeObject(response));
         }
 
         [Authorize]
@@ -68,7 +69,7 @@ namespace StormhammerServiceREST.Hubs
             _dbContext.Mob.Remove(mob);
             _dbContext.SaveChanges();
 
-            await Clients.Client(Context.ConnectionId).SendAsync("DeleteCharacterResponse", "",id);
+            await Clients.Client(Context.ConnectionId).SendAsync("DeleteCharacterResponse", "", JsonConvert.SerializeObject(id));
         }
     }
 }
