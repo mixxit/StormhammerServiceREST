@@ -16,6 +16,7 @@ namespace StormhammerServiceREST
         public DbSet<MobRace> MobRace { get; set; }
         public DbSet<Mob> Mob { get; set; }
         public DbSet<Account> Account { get; set; }
+        public DbSet<Zone> Zone { get; set; }
 
         private readonly DbContextOptions _options;
         public StormhammerContext(DbContextOptions<StormhammerContext> options)

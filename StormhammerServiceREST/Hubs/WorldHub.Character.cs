@@ -50,6 +50,34 @@ namespace StormhammerServiceREST.Hubs
         }
 
         [Authorize]
+        public async Task PlayerMobEnterZone(long mobId)
+        {
+            var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);
+            if (identityView.Identity == null)
+                return;
+            if (!Context.User.Identity.IsAuthenticated)
+                return;
+
+            if (mobId < 1)
+                return;
+
+            var mob = _dbContext.Mob.FirstOrDefault(e => e.Id == mobId && e.AccountId == identityView.Identity.Id);
+
+            if (mob == null)
+                return;
+
+            var zone = _dbContext.Zone.FirstOrDefault(e => e.Id == mob.ZoneId);
+
+            var response = new LoadZoneResponse();
+            response.MobId = mob.Id;
+            response.ZoneId = mob.ZoneId;
+            response.SceneName = zone.SceneName;
+
+            await Clients.Client(Context.ConnectionId).SendAsync("LoadZoneResponse", "", JsonConvert.SerializeObject(response));
+        }
+
+
+        [Authorize]
         public async Task DeleteCharacter(long id)
         {
             var identityView = IdentityView.FromObjectId(_dbContext, (SHIdentity.FromPrincipal(Context.User)).ObjectId);

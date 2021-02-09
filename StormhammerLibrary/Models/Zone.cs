@@ -13,5 +13,7 @@ namespace StormhammerLibrary.Models
         public float SafeX { get; set; }
         public float SafeY { get; set; }
         public float SafeZ { get; set; }
+        [StringLength(40)]
+        public string SceneName { get; set; }
     }
 }
